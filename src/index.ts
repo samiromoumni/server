@@ -25,7 +25,7 @@ app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
 // Root route
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
   res.json({
     message: 'Reliqua Travel API',
     version: '1.0.0',
@@ -48,7 +48,7 @@ app.use('/api/gallery', galleryRoutes)
 app.use('/api/auth', authRoutes)
 
 // Health check
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (_req, res) => {
   res.json({ status: 'OK', message: 'Server is running' })
 })
 

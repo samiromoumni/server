@@ -4,7 +4,11 @@ import User from '../models/User.js'
 import { AuthRequest } from '../middleware/auth.js'
 
 const generateToken = (id: string): string => {
-  return jwt.sign({ id }, process.env.JWT_SECRET || 'secret', {
+  const secret = process.env.JWT_SECRET
+  if (!secret) {
+    throw new Error('JWT_SECRET is not defined')
+  }
+  return jwt.sign({ id }, secret, {
     expiresIn: process.env.JWT_EXPIRE || '7d',
   })
 }

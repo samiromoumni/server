@@ -74,7 +74,7 @@ export const createReservation = async (req: Request, res: Response): Promise<vo
   }
 }
 
-export const getReservations = async (req: Request, res: Response): Promise<void> => {
+export const getReservations = async (_req: Request, res: Response): Promise<void> => {
   try {
     const reservations = await Reservation.find()
       .populate('packageId')

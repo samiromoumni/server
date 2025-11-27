@@ -7,7 +7,7 @@ export const upload = multer({
   limits: {
     fileSize: 10 * 1024 * 1024, // 10MB
   },
-  fileFilter: (req, file, cb) => {
+  fileFilter: (_req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
       cb(null, true)
     } else {
@@ -17,7 +17,7 @@ export const upload = multer({
 })
 
 // Error handler for multer
-export const handleMulterError = (err: any, req: any, res: any, next: any) => {
+export const handleMulterError = (err: any, _req: any, res: any, next: any) => {
   if (err instanceof multer.MulterError) {
     if (err.code === 'LIMIT_FILE_SIZE') {
       return res.status(400).json({ message: 'Le fichier est trop grand (max 10MB)' })

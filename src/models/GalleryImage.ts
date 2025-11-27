@@ -6,6 +6,8 @@ export interface IGalleryImage extends Document {
   description?: string
   destination?: string
   uploadedAt: Date
+  createdAt?: Date
+  updatedAt?: Date
 }
 
 const GalleryImageSchema = new Schema<IGalleryImage>(
@@ -33,8 +35,8 @@ const GalleryImageSchema = new Schema<IGalleryImage>(
   }
 )
 
-GalleryImageSchema.virtual('uploadedAt').get(function () {
-  return this.createdAt
+GalleryImageSchema.virtual('uploadedAt').get(function (this: IGalleryImage & { createdAt?: Date }) {
+  return this.createdAt || new Date()
 })
 
 export default mongoose.model<IGalleryImage>('GalleryImage', GalleryImageSchema)
