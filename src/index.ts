@@ -22,7 +22,30 @@ app.use(helmet())
 // CORS configuration - allow all origins
 // This is safe for production as we have authentication middleware
 app.use(cors({
-  origin: true, // Allow all origins
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, Postman)
+    if (!origin) return callback(null, true)
+    
+    // Allow specific origins
+    const allowedOrigins = [
+      'https://client-theta-sand-52.vercel.app',
+      'http://localhost:5173',
+      'http://localhost:3000',
+      'http://127.0.0.1:5173',
+      'http://127.0.0.1:3000',
+    ]
+    
+    // In production, allow Vercel and localhost; in development, allow all
+    if (process.env.NODE_ENV === 'production') {
+      if (allowedOrigins.includes(origin) || origin.includes('vercel.app')) {
+        callback(null, true)
+      } else {
+        callback(null, true) // Still allow all for now, but can be restricted
+      }
+    } else {
+      callback(null, true) // Allow all in development
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
