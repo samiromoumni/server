@@ -4,6 +4,7 @@ import {
   getReservations,
   getReservationById,
   updateReservation,
+  deleteReservation,
 } from '../controllers/reservationController.js'
 import { protect, adminOnly } from '../middleware/auth.js'
 
@@ -13,6 +14,7 @@ router.post('/', createReservation)
 router.get('/', protect, adminOnly, getReservations)
 router.get('/:id', protect, adminOnly, getReservationById)
 router.put('/:id', protect, adminOnly, updateReservation)
+router.delete('/:id', protect, adminOnly, deleteReservation)
 
 export default router
 
