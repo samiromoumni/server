@@ -3,6 +3,7 @@ import cors from 'cors'
 import helmet from 'helmet'
 import dotenv from 'dotenv'
 import { connectDB } from './config/database.js'
+import { createAdminIfNotExists } from './utils/createAdminIfNotExists.js'
 import { errorHandler } from './middleware/errorHandler.js'
 import packageRoutes from './routes/packageRoutes.js'
 import reservationRoutes from './routes/reservationRoutes.js'
@@ -78,7 +79,10 @@ app.use(errorHandler)
 
 // Connect to database and start server
 connectDB()
-  .then(() => {
+  .then(async () => {
+    // Create admin user if it doesn't exist
+    await createAdminIfNotExists()
+    
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 Server running on port ${PORT}`)
     })
