@@ -18,7 +18,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return
     }
 
-    const user = await User.findOne({ email })
+    const user = await User.findOne({ email: email.toLowerCase().trim() })
     if (!user) {
       res.status(401).json({ message: 'Invalid credentials' })
       return
@@ -41,8 +41,13 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         role: user.role,
       },
     })
-  } catch (error) {
-    res.status(500).json({ message: 'Error during login', error })
+  } catch (error: any) {
+    console.error('Login error:', error)
+    // Don't expose internal error details in production
+    const errorMessage = process.env.NODE_ENV === 'development' 
+      ? error.message 
+      : 'Error during login'
+    res.status(500).json({ message: errorMessage })
   }
 }
 
@@ -54,8 +59,12 @@ export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
       return
     }
     res.json(user)
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching user profile', error })
+  } catch (error: any) {
+    console.error('GetMe error:', error)
+    const errorMessage = process.env.NODE_ENV === 'development' 
+      ? error.message 
+      : 'Error fetching user profile'
+    res.status(500).json({ message: errorMessage })
   }
 }
 
