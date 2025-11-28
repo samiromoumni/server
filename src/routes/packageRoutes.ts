@@ -1,29 +1,26 @@
-import express from 'express';
-import { protect, adminOnly } from '../middleware/auth.js';
+import express from 'express'
+import {
+  getPackages,
+  getPackageById,
+  createPackage,
+  updatePackage,
+  deletePackage,
+  uploadPackageImage,
+} from '../controllers/packageController.js'
+import { protect, adminOnly } from '../middleware/auth.js'
+import { upload, handleMulterError } from '../middleware/upload.js'
 
-const router = express.Router();
+const router = express.Router()
 
-// Public routes
-router.get('/', (_req, res) => {
-  res.json([]);
-});
+router.get('/', getPackages)
+router.get('/:id', getPackageById)
+router.post('/', protect, adminOnly, createPackage)
+router.post('/upload-image', protect, adminOnly, upload.single('image'), handleMulterError, uploadPackageImage)
+router.put('/:id', protect, adminOnly, updatePackage)
+router.delete('/:id', protect, adminOnly, deletePackage)
 
-router.get('/:id', (_req, res) => {
-  res.status(404).json({ error: 'Package not found' });
-});
+export default router
 
-// Admin routes
-router.post('/', protect, adminOnly, (_req, res) => {
-  res.status(501).json({ error: 'Not implemented' });
-});
 
-router.put('/:id', protect, adminOnly, (_req, res) => {
-  res.status(501).json({ error: 'Not implemented' });
-});
 
-router.delete('/:id', protect, adminOnly, (_req, res) => {
-  res.status(501).json({ error: 'Not implemented' });
-});
-
-export default router;
 

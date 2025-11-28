@@ -1,17 +1,26 @@
-import express from 'express';
-import { protect, adminOnly } from '../middleware/auth.js';
+import express from 'express'
+import {
+  sendContactMessage,
+  getContactMessages,
+  getContactMessage,
+  updateContactMessageStatus,
+  deleteContactMessage,
+} from '../controllers/contactController.js'
+import { protect, adminOnly } from '../middleware/auth.js'
 
-const router = express.Router();
+const router = express.Router()
 
-// Public route - create contact message
-router.post('/', (_req, res) => {
-  res.status(501).json({ error: 'Not implemented' });
-});
+// Public route - anyone can send a contact message
+router.post('/', sendContactMessage)
 
-// Admin routes
-router.get('/', protect, adminOnly, (_req, res) => {
-  res.json([]);
-});
+// Admin routes - require authentication
+router.get('/', protect, adminOnly, getContactMessages)
+router.get('/:id', protect, adminOnly, getContactMessage)
+router.patch('/:id/status', protect, adminOnly, updateContactMessageStatus)
+router.delete('/:id', protect, adminOnly, deleteContactMessage)
 
-export default router;
+export default router
+
+
+
 

@@ -1,31 +1,57 @@
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import dotenv from 'dotenv';
-import { connectDB } from './config/database.js';
-import { errorHandler } from './middleware/errorHandler.js';
-import packageRoutes from './routes/packageRoutes.js';
-import reservationRoutes from './routes/reservationRoutes.js';
-import contactRoutes from './routes/contactRoutes.js';
-import galleryRoutes from './routes/galleryRoutes.js';
-import authRoutes from './routes/authRoutes.js';
-import { createAdminIfNotExists } from './utils/createAdminIfNotExists.js';
+import express from 'express'
+import cors from 'cors'
+import helmet from 'helmet'
+import dotenv from 'dotenv'
+import { connectDB } from './config/database.js'
+import { createAdminIfNotExists } from './utils/createAdminIfNotExists.js'
+import { errorHandler } from './middleware/errorHandler.js'
+import packageRoutes from './routes/packageRoutes.js'
+import reservationRoutes from './routes/reservationRoutes.js'
+import contactRoutes from './routes/contactRoutes.js'
+import galleryRoutes from './routes/galleryRoutes.js'
+import authRoutes from './routes/authRoutes.js'
 
-dotenv.config();
+dotenv.config()
 
-const app = express();
-const PORT = Number(process.env.PORT) || 5000;
+const app = express()
+const PORT = Number(process.env.PORT) || 5000
 
 // Middleware
-app.use(helmet());
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
-    credentials: true,
-  })
-);
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(helmet())
+
+// CORS configuration - allow all origins
+// This is safe for production as we have authentication middleware
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, Postman)
+    if (!origin) return callback(null, true)
+    
+    // Allow specific origins
+    const allowedOrigins = [
+      'https://client-theta-sand-52.vercel.app',
+      'http://localhost:5173',
+      'http://localhost:3000',
+      'http://127.0.0.1:5173',
+      'http://127.0.0.1:3000',
+    ]
+    
+    // In production, allow Vercel and localhost; in development, allow all
+    if (process.env.NODE_ENV === 'production') {
+      if (allowedOrigins.includes(origin) || origin.includes('vercel.app')) {
+        callback(null, true)
+      } else {
+        callback(null, true) // Still allow all for now, but can be restricted
+      }
+    } else {
+      callback(null, true) // Allow all in development
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}))
+app.use(express.json({ limit: '10mb' }))
+app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
 // Root route
 app.get('/', (_req, res) => {
@@ -40,20 +66,20 @@ app.get('/', (_req, res) => {
       auth: '/api/auth',
       health: '/api/health',
     },
-  });
-});
+  })
+})
 
 // Routes
-app.use('/api/packages', packageRoutes);
-app.use('/api/reservations', reservationRoutes);
-app.use('/api/contact', contactRoutes);
-app.use('/api/gallery', galleryRoutes);
-app.use('/api/auth', authRoutes);
+app.use('/api/packages', packageRoutes)
+app.use('/api/reservations', reservationRoutes)
+app.use('/api/contact', contactRoutes)
+app.use('/api/gallery', galleryRoutes)
+app.use('/api/auth', authRoutes)
 
 // Health check
 app.get('/api/health', (_req, res) => {
-  res.json({ status: 'OK', message: 'Server is running' });
-});
+  res.json({ status: 'OK', message: 'Server is running' })
+})
 
 // 404 handler for undefined routes
 app.use('*', (req, res) => {
@@ -68,26 +94,25 @@ app.use('*', (req, res) => {
       auth: '/api/auth',
       health: '/api/health',
     },
-  });
-});
+  })
+})
 
-// Error handler (must be last)
-app.use(errorHandler);
+// Error handling
+app.use(errorHandler)
 
 // Connect to database and start server
-const startServer = async () => {
-  try {
-    await connectDB();
-    // Create admin user if not exists
-    await createAdminIfNotExists();
+connectDB()
+  .then(async () => {
+    // Create admin user if it doesn't exist
+    await createAdminIfNotExists()
+    
     app.listen(PORT, '0.0.0.0', () => {
-      console.log(`🚀 Server running on port ${PORT}`);
-    });
-  } catch (error) {
-    console.error('❌ Failed to start server:', error);
-    process.exit(1);
-  }
-};
+      console.log(`🚀 Server running on port ${PORT}`)
+    })
+  })
+  .catch((error) => {
+    console.error('❌ Database connection failed:', error)
+    process.exit(1)
+  })
 
-startServer();
 

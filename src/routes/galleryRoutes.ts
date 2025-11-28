@@ -1,21 +1,20 @@
-import express from 'express';
-import { protect, adminOnly } from '../middleware/auth.js';
+import express from 'express'
+import {
+  getGalleryImages,
+  uploadGalleryImage,
+  deleteGalleryImage,
+} from '../controllers/galleryController.js'
+import { protect, adminOnly } from '../middleware/auth.js'
+import { upload, handleMulterError } from '../middleware/upload.js'
 
-const router = express.Router();
+const router = express.Router()
 
-// Public routes
-router.get('/', (_req, res) => {
-  res.json([]);
-});
+router.get('/', getGalleryImages)
+router.post('/', protect, adminOnly, upload.single('image'), handleMulterError, uploadGalleryImage)
+router.delete('/:id', protect, adminOnly, deleteGalleryImage)
 
-// Admin routes
-router.post('/', protect, adminOnly, (_req, res) => {
-  res.status(501).json({ error: 'Not implemented' });
-});
+export default router
 
-router.delete('/:id', protect, adminOnly, (_req, res) => {
-  res.status(501).json({ error: 'Not implemented' });
-});
 
-export default router;
+
 

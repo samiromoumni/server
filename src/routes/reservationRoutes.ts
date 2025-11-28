@@ -1,24 +1,19 @@
-import express from 'express';
+import express from 'express'
 import {
   createReservation,
   getReservations,
   getReservationById,
   updateReservation,
-  deleteReservation,
-} from '../controllers/reservationController.js';
-import { authenticate, isAdmin } from '../middleware/auth.js';
+} from '../controllers/reservationController.js'
+import { protect, adminOnly } from '../middleware/auth.js'
 
-const router = express.Router();
+const router = express.Router()
 
-// Public route - create reservation
-router.post('/', createReservation);
+router.post('/', createReservation)
+router.get('/', protect, adminOnly, getReservations)
+router.get('/:id', protect, adminOnly, getReservationById)
+router.put('/:id', protect, adminOnly, updateReservation)
 
-// Admin routes - require authentication
-router.get('/', authenticate, isAdmin, getReservations);
-router.get('/:id', authenticate, isAdmin, getReservationById);
-router.put('/:id', authenticate, isAdmin, updateReservation);
-router.delete('/:id', authenticate, isAdmin, deleteReservation);
-
-export default router;
+export default router
 
 

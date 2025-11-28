@@ -1,7 +1,14 @@
+import mongoose from 'mongoose'
+import dotenv from 'dotenv'
 import User from '../models/User.js'
 
-export const createAdminIfNotExists = async (): Promise<void> => {
+dotenv.config()
+
+const createAdmin = async () => {
   try {
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/reliqua-travel')
+    console.log('✅ Connected to MongoDB')
+
     const adminData = {
       username: process.env.ADMIN_USERNAME || 'admin',
       email: process.env.ADMIN_EMAIL || 'reliquatravel.a@gmail.com',
@@ -15,6 +22,7 @@ export const createAdminIfNotExists = async (): Promise<void> => {
 
     if (existingAdmin) {
       console.log('ℹ️  Admin user already exists')
+      await mongoose.connection.close()
       return
     }
 
@@ -23,11 +31,16 @@ export const createAdminIfNotExists = async (): Promise<void> => {
     console.log(`   Username: ${admin.username}`)
     console.log(`   Email: ${admin.email}`)
     console.log(`   Password: ${adminData.password}`)
+
+    await mongoose.connection.close()
+    process.exit(0)
   } catch (error) {
-    console.error('❌ Error creating admin user:', error)
-    // Don't throw - allow server to start even if admin creation fails
+    console.error('❌ Error creating admin:', error)
+    await mongoose.connection.close()
+    process.exit(1)
   }
 }
 
+createAdmin()
 
 
