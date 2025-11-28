@@ -22,7 +22,26 @@ app.use(helmet())
 // CORS configuration - allow all origins
 // This is safe for production as we have authentication middleware
 app.use(cors({
-  origin: true, // Allow all origins
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, Postman)
+    if (!origin) return callback(null, true)
+    
+    // Allow localhost and common development origins
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'http://localhost:3000',
+      'http://127.0.0.1:5173',
+      'http://127.0.0.1:3000',
+      'https://server-ut7a.onrender.com',
+    ]
+    
+    // In development, allow all origins; in production, check allowed list
+    if (process.env.NODE_ENV === 'development' || allowedOrigins.includes(origin)) {
+      callback(null, true)
+    } else {
+      callback(null, true) // Still allow all for now, but can be restricted later
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
