@@ -5,8 +5,8 @@ import {
   getReservationById,
   updateReservation,
   deleteReservation,
-} from '../controllers/reservationController';
-import { authenticate, isAdmin } from '../middleware/auth';
+} from '../controllers/reservationController.js';
+import { authenticate, isAdmin } from '../middleware/auth.js';
 
 const router = express.Router();
 
