@@ -4,8 +4,8 @@ export const createAdminIfNotExists = async (): Promise<void> => {
   try {
     const adminData = {
       username: process.env.ADMIN_USERNAME || 'admin',
-      email: process.env.ADMIN_EMAIL || 'admin@reliquatravel.com',
-      password: process.env.ADMIN_PASSWORD || 'admin123',
+      email: process.env.ADMIN_EMAIL || 'reliquatravel.a@gmail.com',
+      password: process.env.ADMIN_PASSWORD || 'reliquatravel.a',
       role: 'admin' as const,
     }
 
