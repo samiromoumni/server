@@ -42,4 +42,8 @@ export const isAdmin = (req: AuthRequest, res: Response, next: NextFunction): vo
   next();
 };
 
+// Export with alternative names for compatibility with existing routes
+export const protect = authenticate;
+export const adminOnly = isAdmin;
+
 
