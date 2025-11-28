@@ -50,7 +50,7 @@ export const sendContactMessage = async (req: Request, res: Response): Promise<v
   }
 }
 
-export const getContactMessages = async (req: AuthRequest, res: Response): Promise<void> => {
+export const getContactMessages = async (_req: AuthRequest, res: Response): Promise<void> => {
   try {
     const messages = await ContactMessage.find().sort({ createdAt: -1 })
     res.json(messages)
